@@ -5,6 +5,14 @@ require('dotenv').config();
 // App
 const app = express();
 
+// Importing Routes
+const userRoutes = require('./routes/user')
+const wemeetRoutes = require('./routes/wemeet')
+
+// Routes Middlewares
+app.use(userRoutes);
+app.use(wemeetRoutes);
+
 // Database Connection
 mongoose.connect( process.env.MONGO_URI,
     {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true}
@@ -13,11 +21,6 @@ mongoose.connect( process.env.MONGO_URI,
 mongoose.connection.on('error', err => {
 console.log(`DB connection error: ${err.message}`)
 });
-
-// Routes 
-app.get("/", (req, res) => {
-    res.send("Hello from Node")
-})
 
 const port = process.env.PORT || 8000
 
