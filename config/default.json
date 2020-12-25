@@ -1,0 +1,3 @@
+{
+    "mongoURI": "mongodb+srv://root:wemeet_root@cluster0.ytcys.mongodb.net/wemeet?retryWrites=true&w=majority"
+}
