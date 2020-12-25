@@ -13,11 +13,11 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 // Importing Routes
-const userRoutes = require('./routes/user')
+const authRoutes = require('./routes/auth')
 const wemeetRoutes = require('./routes/wemeet')
 
 // Routes Middlewares
-app.use("/api/users", userRoutes);
+app.use("/api/users", authRoutes);
 app.use("/api/wemeets", wemeetRoutes);
 
 const port = process.env.PORT || 8000

@@ -37,3 +37,10 @@ exports.signout = (req, res) => {
         message: "Signout Success"
     })
 }
+
+// Middleware to protect routes
+exports.requireSignin = expressJwt({
+    secret: jwtSecret,
+    algorithms: ["HS256"],
+    userProperty: "auth",
+  });
