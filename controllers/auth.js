@@ -7,13 +7,16 @@ const jwtSecret = config.get("jwtSecret");
 
 
 exports.login = async (req, res)=>{
-    const {name, email} = req.body;
+    const {
+        name, 
+        fid 
+    } = req.body;
     try{
-        // Find the user with this email 
-        let user = await User.findOne({email});
+        // Find the user with this firebase id 
+        let user = await User.findOne({fid});
         // If user does not exist then save it into the database 
         if(!user){
-            newUser = new User({ name, email});
+            newUser = new User({ name, fid });
             await newUser.save();
             user = newUser;
         }
@@ -26,7 +29,7 @@ exports.login = async (req, res)=>{
     }catch(err){
         console.log(err.message);
         res.status(400).json({
-            error: errorHandler(err)
+            error: err.message
         })
     }
 }

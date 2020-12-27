@@ -7,7 +7,7 @@ const UserSchema = mongoose.Schema({
     }, 
     email: {
         type: String, 
-        required: true
+        required: false
     }, 
     profilePicUrl: {
         type: String, 
@@ -36,6 +36,10 @@ const UserSchema = mongoose.Schema({
     eventsHosted: {
         type: Array, 
         default: []
+    }, 
+    fid: {
+        type: String, 
+        required: true
     }
 }, {timestamps: true});
 

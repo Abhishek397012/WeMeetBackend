@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const {helloWeMeet} = require('../controllers/wemeet');
+const {CreateWeMeet} = require('../controllers/wemeet');
 
-router.get('/s', helloWeMeet)
+router.post('/create', CreateWeMeet)
 
 module.exports = router;

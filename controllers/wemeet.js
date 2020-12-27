@@ -1,5 +1,3 @@
-exports.helloWeMeet = (req, res)=>{
-    res.send({
-        message: "hello from wemeet controller"
-    })
+exports.CreateWeMeet = (req, res)=>{
+    console.log(req.body)
 }
