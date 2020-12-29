@@ -30,10 +30,7 @@ const WeMeetSchema = mongoose.Schema(
     status: {
       type: Number,
     },
-    registrationCount: {
-      type: Number,
-      default: 0,
-    },
+
     hostId: {
       type: ObjectId,
       ref: "user",
@@ -44,6 +41,14 @@ const WeMeetSchema = mongoose.Schema(
       required: false,
     },
     speakers: {
+      type: Array,
+      default: [],
+    },
+    sessions: {
+      type: Array,
+      default: [],
+    },
+    registrants: {
       type: Array,
       default: [],
     },

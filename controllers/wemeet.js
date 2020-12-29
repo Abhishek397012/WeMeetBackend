@@ -36,6 +36,38 @@ exports.CreateWeMeet = async (req, res) => {
     res.json({ message: err });
   }
 };
+
+exports.GetWeMeet = async (req, res) => {
+  try {
+    User.findById(req.params.id, function (err, user) {
+      if (err) {
+        console.log(err);
+      } else {
+        var istrue = false;
+        user.eventsHosted.forEach((event) => {
+          if (event == req.params.wemeetid) {
+            istrue = true;
+          }
+        });
+        if (istrue) {
+          try {
+            Wemeet.findById(req.params.wemeetid, function (err, wemeet) {
+              if (err) {
+                console.log(err);
+              } else {
+                res.json(wemeet);
+              }
+            });
+          } catch (err) {
+            res.json({ message: err });
+          }
+        }
+      }
+    });
+  } catch (err) {
+    res.json({ message: err });
+  }
+};
 exports.UpdateWeMeet = async (req, res) => {
   try {
     Wemeet.findByIdAndUpdate(
@@ -83,7 +115,37 @@ exports.GetAllWeMeets = async (req, res) => {
     res.json({ message: err });
   }
 };
+exports.GetAllSpeakers = async (req, res) => {
+  try {
+    User.findById(
+      req.params.id,
 
+      function (err, user) {
+        if (err) {
+          console.log(err);
+        } else {
+          try {
+            Wemeet.findById(
+              req.params.wemeetid,
+
+              function (err, wemeet) {
+                if (err) {
+                  console.log(err);
+                } else {
+                  res.json(wemeet.speakers);
+                }
+              }
+            );
+          } catch (err) {
+            res.json({ message: err });
+          }
+        }
+      }
+    );
+  } catch (err) {
+    res.json({ message: err });
+  }
+};
 exports.AddSpeakers = async (req, res) => {
   try {
     Wemeet.findByIdAndUpdate(
@@ -92,7 +154,7 @@ exports.AddSpeakers = async (req, res) => {
         $push: {
           speakers: {
             name: req.body.name,
-            id: req.body.id,
+            email: req.body.email,
             designation: req.body.designation,
             organization: req.body.organization,
             profilePicUrl: req.body.profilePicUrl,
@@ -120,6 +182,67 @@ exports.RemoveSpeakers = async (req, res) => {
         $pull: {
           speakers: {
             id: req.body.id,
+          },
+        },
+      },
+      function (err, wemeet) {
+        if (err) {
+          console.log(err);
+        } else {
+          res.json(wemeet);
+        }
+      }
+    );
+  } catch (err) {
+    res.json({ message: err });
+  }
+};
+
+exports.GetAllRegistrants = async (req, res) => {
+  try {
+    User.findById(
+      req.params.id,
+
+      function (err, user) {
+        if (err) {
+          console.log(err);
+        } else {
+          try {
+            Wemeet.findById(
+              req.params.wemeetid,
+
+              function (err, wemeet) {
+                if (err) {
+                  console.log(err);
+                } else {
+                  res.json(wemeet.registrants);
+                }
+              }
+            );
+          } catch (err) {
+            res.json({ message: err });
+          }
+        }
+      }
+    );
+  } catch (err) {
+    res.json({ message: err });
+  }
+};
+exports.AddRegistrants = async (req, res) => {
+  try {
+    Wemeet.findByIdAndUpdate(
+      req.params.wemeetid,
+      {
+        $push: {
+          registrants: {
+            name: req.body.name,
+            email: req.body.email,
+            designation: req.body.designation,
+            organization: req.body.organization,
+            city: req.body.city,
+            country: req.body.country,
+            profilePicUrl: req.body.profilePicUrl,
           },
         },
       },
