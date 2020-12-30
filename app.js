@@ -1,9 +1,12 @@
 const express = require('express');
-const app = express();
 const connectDB = require('./config/db')
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const multer = require("multer")
+
 require('dotenv').config();
+const app = express();
+
 
 // Database Connection
 connectDB();

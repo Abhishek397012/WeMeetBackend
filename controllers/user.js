@@ -1,7 +1,7 @@
 const User = require("../models/user");
 
 exports.userById = (req, res, next, id)=>{
-    User.findById(id).exec((err, user)=>{
+    User.findOne({fid: id}).exec((err, user)=>{
         if(err || !user){
             res.json({
                 error: "User not Found"
@@ -10,5 +10,9 @@ exports.userById = (req, res, next, id)=>{
         req.profile = user;
         next();
     })
+}
+
+exports.update = (req, res) =>{
+    console.log(req.body);
 }
 
