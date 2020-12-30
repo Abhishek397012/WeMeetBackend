@@ -7,6 +7,6 @@ const {requireSignin} = require('../controllers/auth');
 router.put('/:userId', requireSignin, update);
 router.get('/:userId', getUser);
 
-router.param("userId", userById)
+router.param("userId", userById);
 
 module.exports = router;
