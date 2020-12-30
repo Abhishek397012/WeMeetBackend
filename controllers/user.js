@@ -13,6 +13,17 @@ exports.userById = (req, res, next, id)=>{
 }
 
 exports.update = (req, res) =>{
-    console.log(req.body);
+    User.findOneAndUpdate({fid: req.profile.fid}, {$set: req.body}, {new: true}, (err, user)=>{
+        if(err){
+            res.status(400).json({
+                error: "Unable to Edit the details"
+            })
+        }
+        res.json(user);
+    })
 }
 
+
+exports.getUser = (req, res)=>{
+    res.json(req.profile);
+}
