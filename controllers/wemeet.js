@@ -117,7 +117,7 @@ exports.GetAllUpcomingWemeets = (req, res) => {
           Wemeet.findOne({_id: eventId})
             .populate('user')
             .exec((err, event)=>{
-              if(event.status === 0){
+              if(event && event.status === 0){
                 ue = {
                   speakers: event.speakers, 
                   sessions: event.sessions, 
@@ -139,9 +139,7 @@ exports.GetAllUpcomingWemeets = (req, res) => {
 
               }
               if(index === Events.length-1){
-                res.json({
-                  AllUpcomingWemeets: UpcomingWemeets
-                })
+                res.send(UpcomingWemeets);
               }
             })
 
@@ -167,7 +165,7 @@ exports.GetAllPastWeMeets = (req, res) => {
           Wemeet.findOne({_id: eventId})
             .populate('user')
             .exec((err, event)=>{
-              if(event.status === 2){
+              if(event && event.status === 2){
                 ue = {
                   speakers: event.speakers, 
                   sessions: event.sessions, 
@@ -188,9 +186,7 @@ exports.GetAllPastWeMeets = (req, res) => {
                 PastWemeets.push(ue);
               }
               if(index === Events.length-1){
-                res.json({
-                  AllPastWemeets: PastWemeets
-                })
+                res.send(PastWemeets)
               }
             })
 
