@@ -83,7 +83,7 @@ exports.Upcoming = (req, res, next) => {
           Wemeet.findOne({_id: eventId})
             .populate('user')
             .exec((err, event)=>{
-              if(event.status===0 && !found){
+              if(event && event.status===0 && !found){
                 found=true;
                 upcoming=event;
               }
