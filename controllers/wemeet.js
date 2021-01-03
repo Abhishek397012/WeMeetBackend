@@ -100,19 +100,116 @@ exports.UpdateWeMeet = async (req, res) => {
 };
 exports.GetAllWeMeets = async (req, res) => {
   try {
-    User.findById(
-      req.params.id,
-
-      function (err, user) {
-        if (err) {
-          console.log(err);
-        } else {
-          res.json(user.eventsHosted);
-        }
+    User.findById(req.params.id, (err, user) => {
+      if (err) {
+        console.log(err);
+      } else {
+        var Events = user.eventsHosted;
+        var AllWemeets = [];
+        Events.forEach((eventId, index) => {
+          Wemeet.findOne({ _id: eventId })
+            .populate("user")
+            .exec((err, event) => {
+              if (event) {
+                ue = {
+                  speakers: event.speakers,
+                  sessions: event.sessions,
+                  registrants: event.registrants,
+                  _id: event._id,
+                  title: event.title,
+                  description: event.description,
+                  startDateTime: event.startDateTime,
+                  endDateTime: event.endDateTime,
+                  visibility: event.visibility,
+                  loungeTables: event.loungeTables,
+                  status: event.status,
+                  hostId: event.hostId,
+                  imgUrl: event.imgUrl,
+                  createdAt: event.createdAt,
+                  updatedAt: event.updatedAt,
+                };
+                AllWemeets.push(ue);
+              }
+              if (index === Events.length - 1) {
+                res.send(AllWemeets);
+              }
+            });
+        });
       }
-    );
+    });
   } catch (err) {
-    res.json({ message: err });
+    console.log(err);
+  }
+};
+exports.GetAllSortedWeMeets = async (req, res) => {
+  try {
+    User.findById(req.params.id, (err, user) => {
+      if (err) {
+        console.log(err);
+      } else {
+        var Events = user.eventsHosted;
+        var AllWemeets = [];
+        Events.forEach((eventId, index) => {
+          Wemeet.findOne({ _id: eventId })
+            .populate("user")
+            .exec((err, event) => {
+              if (event) {
+                ue = {
+                  speakers: event.speakers,
+                  sessions: event.sessions,
+                  registrants: event.registrants,
+                  _id: event._id,
+                  title: event.title,
+                  description: event.description,
+                  startDateTime: event.startDateTime,
+                  endDateTime: event.endDateTime,
+                  visibility: event.visibility,
+                  loungeTables: event.loungeTables,
+                  status: event.status,
+                  hostId: event.hostId,
+                  imgUrl: event.imgUrl,
+                  createdAt: event.createdAt,
+                  updatedAt: event.updatedAt,
+                };
+                AllWemeets.push(ue);
+              }
+              if (index === Events.length - 1) {
+                AllWemeets.sort((a, b) => a.startDateTime - b.startDateTime);
+                GroupedWeMeet = [];
+                allWeMeetTimes = new Set();
+                MonthlyWeMeets = [];
+                var f = 0;
+                var weMeetTime;
+                AllWemeets.forEach((wemeet) => {
+                  previousWeMeetTime = weMeetTime;
+                  weMeetTime =
+                    String(wemeet.startDateTime).slice(4, 7) +
+                    String(wemeet.startDateTime).slice(10, 15);
+                  if (allWeMeetTimes.has(weMeetTime) == false) {
+                    if (f != 0)
+                      GroupedWeMeet.push({
+                        WemeetTime: previousWeMeetTime,
+                        Wemeets: MonthlyWeMeets,
+                      });
+
+                    f = 1;
+                    MonthlyWeMeets = [];
+                  }
+                  MonthlyWeMeets.push(wemeet);
+                  allWeMeetTimes.add(weMeetTime);
+                });
+                GroupedWeMeet.push({
+                  WemeetTime: weMeetTime,
+                  Wemeets: MonthlyWeMeets,
+                });
+                res.send(GroupedWeMeet);
+              }
+            });
+        });
+      }
+    });
+  } catch (err) {
+    console.log(err);
   }
 };
 exports.GetAllSpeakers = async (req, res) => {
