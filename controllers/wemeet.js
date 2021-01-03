@@ -68,6 +68,136 @@ exports.GetWeMeet = async (req, res) => {
     res.json({ message: err });
   }
 };
+
+exports.Upcoming = (req, res, next) => {
+  try{
+    User.findById(req.params.id, (err, user)=>{
+      if(err){
+        console.log(err);
+      }
+      else{
+        var Events = user.eventsHosted;
+        var found=false;
+        var upcoming = null;
+        Events.forEach((eventId, index)=>{
+          Wemeet.findOne({_id: eventId})
+            .populate('user')
+            .exec((err, event)=>{
+              if(event.status===0 && !found){
+                found=true;
+                upcoming=event;
+              }
+              if(!found && index==Events.length-1){
+                upcoming=null;
+              }
+              if(index==Events.length-1){
+                res.json({
+                  UpcomingWemeet: upcoming
+                })
+              }
+            })  
+        })
+      }
+    })
+  }
+  catch(err){
+    return res.json({message: err});
+  }
+}
+exports.GetAllUpcomingWemeets = (req, res) => {
+  try{
+    User.findById(req.params.id, (err, user)=>{
+      if(err){
+        console.log(err);
+      }
+      else{
+        var Events = user.eventsHosted;
+        var UpcomingWemeets = [];
+        Events.forEach((eventId, index)=>{
+          Wemeet.findOne({_id: eventId})
+            .populate('user')
+            .exec((err, event)=>{
+              if(event && event.status === 0){
+                ue = {
+                  speakers: event.speakers, 
+                  sessions: event.sessions, 
+                  registrants: event.registrants, 
+                  _id: event._id, 
+                  title: event.title, 
+                  description: event.description, 
+                  startDateTime: event.startDateTime, 
+                  endDateTime: event.endDateTime, 
+                  visibility: event.visibility, 
+                  loungeTables: event.loungeTables, 
+                  status: event.status, 
+                  hostId: event.hostId, 
+                  imgUrl: event.imgUrl, 
+                  createdAt: event.createdAt, 
+                  updatedAt: event.updatedAt
+                }
+                UpcomingWemeets.push(ue);
+
+              }
+              if(index === Events.length-1){
+                res.send(UpcomingWemeets);
+              }
+            })
+
+        })  
+      }
+    })
+  }
+  catch(err){
+    console.log(err)
+  }
+}
+
+exports.GetAllPastWeMeets = (req, res) => {
+  try{
+    User.findById(req.params.id, (err, user)=>{
+      if(err){
+        console.log(err);
+      }
+      else{
+        var Events = user.eventsHosted;
+        var PastWemeets = [];
+        Events.forEach((eventId, index)=>{
+          Wemeet.findOne({_id: eventId})
+            .populate('user')
+            .exec((err, event)=>{
+              if(event && event.status === 2){
+                ue = {
+                  speakers: event.speakers, 
+                  sessions: event.sessions, 
+                  registrants: event.registrants, 
+                  _id: event._id, 
+                  title: event.title, 
+                  description: event.description, 
+                  startDateTime: event.startDateTime, 
+                  endDateTime: event.endDateTime, 
+                  visibility: event.visibility, 
+                  loungeTables: event.loungeTables, 
+                  status: event.status, 
+                  hostId: event.hostId, 
+                  imgUrl: event.imgUrl, 
+                  createdAt: event.createdAt, 
+                  updatedAt: event.updatedAt
+                }
+                PastWemeets.push(ue);
+              }
+              if(index === Events.length-1){
+                res.send(PastWemeets)
+              }
+            })
+
+        })  
+      }
+    })
+  }
+  catch(err){
+    console.log(err)
+  }
+}
 exports.UpdateWeMeet = async (req, res) => {
   try {
     Wemeet.findByIdAndUpdate(
