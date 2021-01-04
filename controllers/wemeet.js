@@ -70,14 +70,13 @@ exports.GetWeMeet = async (req, res) => {
 };
 
 exports.Upcoming = (req, res, next) => {
-  try{
-    User.findById(req.params.id, (err, user)=>{
-      if(err){
+  try {
+    User.findById(req.params.id, (err, user) => {
+      if (err) {
         console.log(err);
-      }
-      else{
+      } else {
         var Events = user.eventsHosted;
-        var found=false;
+        var found = false;
         var upcoming = null;
         Events.forEach((eventId, index)=>{
           Wemeet.findOne({_id: eventId})
@@ -87,117 +86,109 @@ exports.Upcoming = (req, res, next) => {
                 found=true;
                 upcoming=event;
               }
-              if(!found && index==Events.length-1){
-                upcoming=null;
+              if (!found && index == Events.length - 1) {
+                upcoming = null;
               }
-              if(index==Events.length-1){
+              if (index == Events.length - 1) {
                 res.json({
-                  UpcomingWemeet: upcoming
-                })
+                  UpcomingWemeet: upcoming,
+                });
               }
-            })  
-        })
+            });
+        });
       }
-    })
+    });
+  } catch (err) {
+    return res.json({ message: err });
   }
-  catch(err){
-    return res.json({message: err});
-  }
-}
+};
 exports.GetAllUpcomingWemeets = (req, res) => {
-  try{
-    User.findById(req.params.id, (err, user)=>{
-      if(err){
+  try {
+    User.findById(req.params.id, (err, user) => {
+      if (err) {
         console.log(err);
-      }
-      else{
+      } else {
         var Events = user.eventsHosted;
         var UpcomingWemeets = [];
-        Events.forEach((eventId, index)=>{
-          Wemeet.findOne({_id: eventId})
-            .populate('user')
-            .exec((err, event)=>{
-              if(event && event.status === 0){
+        Events.forEach((eventId, index) => {
+          Wemeet.findOne({ _id: eventId })
+            .populate("user")
+            .exec((err, event) => {
+              if (event && event.status === 0) {
                 ue = {
-                  speakers: event.speakers, 
-                  sessions: event.sessions, 
-                  registrants: event.registrants, 
-                  _id: event._id, 
-                  title: event.title, 
-                  description: event.description, 
-                  startDateTime: event.startDateTime, 
-                  endDateTime: event.endDateTime, 
-                  visibility: event.visibility, 
-                  loungeTables: event.loungeTables, 
-                  status: event.status, 
-                  hostId: event.hostId, 
-                  imgUrl: event.imgUrl, 
-                  createdAt: event.createdAt, 
-                  updatedAt: event.updatedAt
-                }
+                  speakers: event.speakers,
+                  sessions: event.sessions,
+                  registrants: event.registrants,
+                  _id: event._id,
+                  title: event.title,
+                  description: event.description,
+                  startDateTime: event.startDateTime,
+                  endDateTime: event.endDateTime,
+                  visibility: event.visibility,
+                  loungeTables: event.loungeTables,
+                  status: event.status,
+                  hostId: event.hostId,
+                  imgUrl: event.imgUrl,
+                  createdAt: event.createdAt,
+                  updatedAt: event.updatedAt,
+                };
                 UpcomingWemeets.push(ue);
-
               }
-              if(index === Events.length-1){
+              if (index === Events.length - 1) {
                 res.send(UpcomingWemeets);
               }
-            })
-
-        })  
+            });
+        });
       }
-    })
+    });
+  } catch (err) {
+    console.log(err);
   }
-  catch(err){
-    console.log(err)
-  }
-}
+};
 
 exports.GetAllPastWeMeets = (req, res) => {
-  try{
-    User.findById(req.params.id, (err, user)=>{
-      if(err){
+  try {
+    User.findById(req.params.id, (err, user) => {
+      if (err) {
         console.log(err);
-      }
-      else{
+      } else {
         var Events = user.eventsHosted;
         var PastWemeets = [];
-        Events.forEach((eventId, index)=>{
-          Wemeet.findOne({_id: eventId})
-            .populate('user')
-            .exec((err, event)=>{
-              if(event && event.status === 2){
+        Events.forEach((eventId, index) => {
+          Wemeet.findOne({ _id: eventId })
+            .populate("user")
+            .exec((err, event) => {
+              if (event && event.status === 2) {
                 ue = {
-                  speakers: event.speakers, 
-                  sessions: event.sessions, 
-                  registrants: event.registrants, 
-                  _id: event._id, 
-                  title: event.title, 
-                  description: event.description, 
-                  startDateTime: event.startDateTime, 
-                  endDateTime: event.endDateTime, 
-                  visibility: event.visibility, 
-                  loungeTables: event.loungeTables, 
-                  status: event.status, 
-                  hostId: event.hostId, 
-                  imgUrl: event.imgUrl, 
-                  createdAt: event.createdAt, 
-                  updatedAt: event.updatedAt
-                }
+                  speakers: event.speakers,
+                  sessions: event.sessions,
+                  registrants: event.registrants,
+                  _id: event._id,
+                  title: event.title,
+                  description: event.description,
+                  startDateTime: event.startDateTime,
+                  endDateTime: event.endDateTime,
+                  visibility: event.visibility,
+                  loungeTables: event.loungeTables,
+                  status: event.status,
+                  hostId: event.hostId,
+                  imgUrl: event.imgUrl,
+                  createdAt: event.createdAt,
+                  updatedAt: event.updatedAt,
+                };
                 PastWemeets.push(ue);
               }
-              if(index === Events.length-1){
-                res.send(PastWemeets)
+              if (index === Events.length - 1) {
+                res.send(PastWemeets);
               }
-            })
-
-        })  
+            });
+        });
       }
-    })
+    });
+  } catch (err) {
+    console.log(err);
   }
-  catch(err){
-    console.log(err)
-  }
-}
+};
 exports.UpdateWeMeet = async (req, res) => {
   try {
     Wemeet.findByIdAndUpdate(
@@ -230,19 +221,148 @@ exports.UpdateWeMeet = async (req, res) => {
 };
 exports.GetAllWeMeets = async (req, res) => {
   try {
-    User.findById(
-      req.params.id,
-
-      function (err, user) {
-        if (err) {
-          console.log(err);
-        } else {
-          res.json(user.eventsHosted);
-        }
+    User.findById(req.params.id, (err, user) => {
+      if (err) {
+        console.log(err);
+      } else {
+        var Events = user.eventsHosted;
+        var AllWemeets = [];
+        Events.forEach((eventId, index) => {
+          Wemeet.findOne({ _id: eventId })
+            .populate("user")
+            .exec((err, event) => {
+              if (event) {
+                ue = {
+                  speakers: event.speakers,
+                  sessions: event.sessions,
+                  registrants: event.registrants,
+                  _id: event._id,
+                  title: event.title,
+                  description: event.description,
+                  startDateTime: event.startDateTime,
+                  endDateTime: event.endDateTime,
+                  visibility: event.visibility,
+                  loungeTables: event.loungeTables,
+                  status: event.status,
+                  hostId: event.hostId,
+                  imgUrl: event.imgUrl,
+                  createdAt: event.createdAt,
+                  updatedAt: event.updatedAt,
+                };
+                AllWemeets.push(ue);
+              }
+              if (index === Events.length - 1) {
+                res.send(AllWemeets);
+              }
+            });
+        });
       }
-    );
+    });
   } catch (err) {
-    res.json({ message: err });
+    console.log(err);
+  }
+};
+exports.GetAllWeMeetsDetails = async (req, res) => {
+  try {
+    User.findById(req.params.id, (err, user) => {
+      if (err) {
+        console.log(err);
+      } else {
+        var Events = user.eventsHosted;
+        var WemeetsCount = Events.length;
+        var SpeakersCount = 0;
+        var RegistrationsCount = 0;
+        Events.forEach((eventId, index) => {
+          Wemeet.findOne({ _id: eventId })
+            .populate("user")
+            .exec((err, event) => {
+              if (event) {
+                RegistrationsCount += event.registrants.length;
+                SpeakersCount += event.speakers.length;
+              }
+            });
+        });
+        res.send({
+          TeamWeMeets: WemeetsCount,
+          TotalSpeakers: SpeakersCount,
+          TotalRegistrations: RegistrationsCount,
+          TotalAttendee: RegistrationsCount - SpeakersCount,
+        });
+      }
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+exports.GetAllSortedWeMeets = async (req, res) => {
+  try {
+    User.findById(req.params.id, (err, user) => {
+      if (err) {
+        console.log(err);
+      } else {
+        var Events = user.eventsHosted;
+        var AllWemeets = [];
+        Events.forEach((eventId, index) => {
+          Wemeet.findOne({ _id: eventId })
+            .populate("user")
+            .exec((err, event) => {
+              if (event) {
+                ue = {
+                  speakers: event.speakers,
+                  sessions: event.sessions,
+                  registrants: event.registrants,
+                  _id: event._id,
+                  title: event.title,
+                  description: event.description,
+                  startDateTime: event.startDateTime,
+                  endDateTime: event.endDateTime,
+                  visibility: event.visibility,
+                  loungeTables: event.loungeTables,
+                  status: event.status,
+                  hostId: event.hostId,
+                  imgUrl: event.imgUrl,
+                  createdAt: event.createdAt,
+                  updatedAt: event.updatedAt,
+                };
+                AllWemeets.push(ue);
+              }
+              if (index === Events.length - 1) {
+                AllWemeets.sort((a, b) => a.startDateTime - b.startDateTime);
+                GroupedWeMeet = [];
+                allWeMeetTimes = new Set();
+                MonthlyWeMeets = [];
+                var f = 0;
+                var weMeetTime;
+                AllWemeets.forEach((wemeet) => {
+                  previousWeMeetTime = weMeetTime;
+                  weMeetTime =
+                    String(wemeet.startDateTime).slice(4, 7) +
+                    String(wemeet.startDateTime).slice(10, 15);
+                  if (allWeMeetTimes.has(weMeetTime) == false) {
+                    if (f != 0)
+                      GroupedWeMeet.push({
+                        WemeetTime: previousWeMeetTime,
+                        Wemeets: MonthlyWeMeets,
+                      });
+
+                    f = 1;
+                    MonthlyWeMeets = [];
+                  }
+                  MonthlyWeMeets.push(wemeet);
+                  allWeMeetTimes.add(weMeetTime);
+                });
+                GroupedWeMeet.push({
+                  WemeetTime: weMeetTime,
+                  Wemeets: MonthlyWeMeets,
+                });
+                res.send(GroupedWeMeet);
+              }
+            });
+        });
+      }
+    });
+  } catch (err) {
+    console.log(err);
   }
 };
 exports.GetAllSpeakers = async (req, res) => {

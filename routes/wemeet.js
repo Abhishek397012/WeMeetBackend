@@ -6,6 +6,8 @@ const {
   GetWeMeet,
   UpdateWeMeet,
   GetAllWeMeets,
+  GetAllWeMeetsDetails,
+  GetAllSortedWeMeets,
   GetAllSpeakers,
   AddSpeakers,
   RemoveSpeakers,
@@ -17,18 +19,20 @@ const {
   GetAllSession,
   AddSessionSpeakers,
   RemoveSessionSpeakers,
-  Upcoming, 
-  GetAllUpcomingWemeets, 
-  GetAllPastWeMeets
+  Upcoming,
+  GetAllUpcomingWemeets,
+  GetAllPastWeMeets,
 } = require("../controllers/wemeet");
 
 router.post("/:id/create", CreateWeMeet);
 router.get("/:id/:wemeetid/summary", GetWeMeet);
 router.put("/:id/:wemeetid/update", UpdateWeMeet);
 router.get("/:id/allwemeets", GetAllWeMeets);
+router.get("/:id/allwemeetsdetails", GetAllWeMeetsDetails);
+router.get("/:id/allsortedwemeets", GetAllSortedWeMeets);
 router.get("/:id/upcoming", Upcoming);
-router.get('/:id/allupcoming', GetAllUpcomingWemeets)
-router.get('/:id/allpast', GetAllPastWeMeets);
+router.get("/:id/allupcoming", GetAllUpcomingWemeets);
+router.get("/:id/allpast", GetAllPastWeMeets);
 
 router.get("/:id/:wemeetid/allspeakers", GetAllSpeakers);
 router.post("/:id/:wemeetid/addspeakers", AddSpeakers);
@@ -45,6 +49,5 @@ router.delete(
   "/:id/:wemeetid/:sessionid/removespeakers",
   RemoveSessionSpeakers
 );
-
 
 module.exports = router;
