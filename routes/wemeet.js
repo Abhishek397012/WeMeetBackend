@@ -17,8 +17,8 @@ const {
   GetAllSession,
   AddSessionSpeakers,
   RemoveSessionSpeakers,
-  Upcoming, 
-  GetAllUpcomingWemeets, 
+  Upcoming,
+  GetAllUpcomingWemeets,
   GetAllPastWeMeets
 } = require("../controllers/wemeet");
 
