@@ -21,11 +21,7 @@ const {
   RemoveSessionSpeakers,
   Upcoming,
   GetAllUpcomingWemeets,
-<<<<<<< HEAD
-  GetAllPastWeMeets
-=======
   GetAllPastWeMeets,
->>>>>>> 190d316f7edfddf88e9c52f19603e2d05abd511f
 } = require("../controllers/wemeet");
 
 router.post("/:id/create", CreateWeMeet);
