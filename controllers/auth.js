@@ -8,7 +8,7 @@ const jwtSecret = config.get("jwtSecret");
 
 exports.login = async (req, res)=>{
     try{
-        const {fid, name, profilePicUrl, designation, organization, city, aboutMe, country, eventsHosted} = req.body;
+        const {fid, name, profilePicUrl, designation, organization, city, aboutMe, country, eventsHosted, email} = req.body;
         // Find the user with this firebase id 
         let user = await User.findOne({fid});
         // If user does not exist then save it into the database 
