@@ -78,13 +78,13 @@ exports.Upcoming = (req, res, next) => {
         var Events = user.eventsHosted;
         var found = false;
         var upcoming = null;
-        Events.forEach((eventId, index)=>{
-          Wemeet.findOne({_id: eventId})
-            .populate('user')
-            .exec((err, event)=>{
-              if(event && event.status===0 && !found){
-                found=true;
-                upcoming=event;
+        Events.forEach((eventId, index) => {
+          Wemeet.findOne({ _id: eventId })
+            .populate("user")
+            .exec((err, event) => {
+              if (event && event.status === 0 && !found) {
+                found = true;
+                upcoming = event;
               }
               if (!found && index == Events.length - 1) {
                 upcoming = null;
@@ -327,7 +327,7 @@ exports.GetAllSortedWeMeets = async (req, res) => {
                 AllWemeets.push(ue);
               }
               if (index === Events.length - 1) {
-                AllWemeets.sort((a, b) => a.startDateTime - b.startDateTime);
+                AllWemeets.sort((a, b) => b.startDateTime - a.startDateTime);
                 GroupedWeMeet = [];
                 allWeMeetTimes = new Set();
                 MonthlyWeMeets = [];
@@ -374,20 +374,30 @@ exports.GetAllSpeakers = async (req, res) => {
         if (err) {
           console.log(err);
         } else {
-          try {
-            Wemeet.findById(
-              req.params.wemeetid,
+          var isallowed = false;
+          user.eventsHosted.forEach((event) => {
+            if (event == req.params.wemeetid) {
+              isallowed = true;
+            }
+          });
+          if (isallowed) {
+            try {
+              Wemeet.findById(
+                req.params.wemeetid,
 
-              function (err, wemeet) {
-                if (err) {
-                  console.log(err);
-                } else {
-                  res.json(wemeet.speakers);
+                function (err, wemeet) {
+                  if (err) {
+                    console.log(err);
+                  } else {
+                    res.json({ allowed: 1, speakers: wemeet.speakers });
+                  }
                 }
-              }
-            );
-          } catch (err) {
-            res.json({ message: err });
+              );
+            } catch (err) {
+              res.json({ message: err });
+            }
+          } else {
+            res.json({ allowed: 0 });
           }
         }
       }
@@ -408,6 +418,7 @@ exports.AddSpeakers = async (req, res) => {
             designation: req.body.designation,
             organization: req.body.organization,
             profilePicUrl: req.body.profilePicUrl,
+            sessions: [],
           },
         },
       },
@@ -436,6 +447,7 @@ exports.RemoveSpeakers = async (req, res) => {
             designation: req.body.designation,
             organization: req.body.organization,
             profilePicUrl: req.body.profilePicUrl,
+            sessions: req.body.sessions,
           },
         },
       },
