@@ -55,12 +55,14 @@ exports.GetWeMeet = async (req, res) => {
               if (err) {
                 console.log(err);
               } else {
-                res.json(wemeet);
+                res.json({ allowed: 1, wemeet: wemeet });
               }
             });
           } catch (err) {
             res.json({ message: err });
           }
+        } else {
+          res.json({ allowed: 0 });
         }
       }
     });
@@ -78,18 +80,20 @@ exports.Upcoming = (req, res, next) => {
         var Events = user.eventsHosted;
         var found = false;
         var upcoming = null;
-        Events.forEach((eventId, index) => {
+        var count = 0;
+        Events.forEach((eventId) => {
           Wemeet.findOne({ _id: eventId })
             .populate("user")
             .exec((err, event) => {
+              count++;
               if (event && event.status === 0 && !found) {
                 found = true;
                 upcoming = event;
               }
-              if (!found && index == Events.length - 1) {
+              if (!found && count == Events.length) {
                 upcoming = null;
               }
-              if (index == Events.length - 1) {
+              if (count === Events.length) {
                 res.json({
                   UpcomingWemeet: upcoming,
                 });
@@ -110,10 +114,12 @@ exports.GetAllUpcomingWemeets = (req, res) => {
       } else {
         var Events = user.eventsHosted;
         var UpcomingWemeets = [];
+        var count = 0;
         Events.forEach((eventId, index) => {
           Wemeet.findOne({ _id: eventId })
             .populate("user")
             .exec((err, event) => {
+              count++;
               if (event && event.status === 0) {
                 ue = {
                   speakers: event.speakers,
@@ -134,7 +140,8 @@ exports.GetAllUpcomingWemeets = (req, res) => {
                 };
                 UpcomingWemeets.push(ue);
               }
-              if (index === Events.length - 1) {
+
+              if (count === Events.length) {
                 res.send(UpcomingWemeets);
               }
             });
@@ -154,10 +161,12 @@ exports.GetAllPastWeMeets = (req, res) => {
       } else {
         var Events = user.eventsHosted;
         var PastWemeets = [];
-        Events.forEach((eventId, index) => {
+        var count = 0;
+        Events.forEach((eventId) => {
           Wemeet.findOne({ _id: eventId })
             .populate("user")
             .exec((err, event) => {
+              count++;
               if (event && event.status === 2) {
                 ue = {
                   speakers: event.speakers,
@@ -178,7 +187,7 @@ exports.GetAllPastWeMeets = (req, res) => {
                 };
                 PastWemeets.push(ue);
               }
-              if (index === Events.length - 1) {
+              if (count === Events.length) {
                 res.send(PastWemeets);
               }
             });
@@ -227,11 +236,13 @@ exports.GetAllWeMeets = async (req, res) => {
       } else {
         var Events = user.eventsHosted;
         var AllWemeets = [];
-        Events.forEach((eventId, index) => {
+        var count = 0;
+        Events.forEach((eventId) => {
           Wemeet.findOne({ _id: eventId })
             .populate("user")
             .exec((err, event) => {
               if (event) {
+                count++;
                 ue = {
                   speakers: event.speakers,
                   sessions: event.sessions,
@@ -251,7 +262,7 @@ exports.GetAllWeMeets = async (req, res) => {
                 };
                 AllWemeets.push(ue);
               }
-              if (index === Events.length - 1) {
+              if (count === Events.length) {
                 res.send(AllWemeets);
               }
             });
@@ -272,7 +283,7 @@ exports.GetAllWeMeetsDetails = async (req, res) => {
         var WemeetsCount = Events.length;
         var SpeakersCount = 0;
         var RegistrationsCount = 0;
-        Events.forEach((eventId, index) => {
+        Events.forEach((eventId) => {
           Wemeet.findOne({ _id: eventId })
             .populate("user")
             .exec((err, event) => {
@@ -302,10 +313,12 @@ exports.GetAllSortedWeMeets = async (req, res) => {
       } else {
         var Events = user.eventsHosted;
         var AllWemeets = [];
-        Events.forEach((eventId, index) => {
+        var count = 0;
+        Events.forEach((eventId) => {
           Wemeet.findOne({ _id: eventId })
             .populate("user")
             .exec((err, event) => {
+              count++;
               if (event) {
                 ue = {
                   speakers: event.speakers,
@@ -326,7 +339,7 @@ exports.GetAllSortedWeMeets = async (req, res) => {
                 };
                 AllWemeets.push(ue);
               }
-              if (index === Events.length - 1) {
+              if (count === Events.length) {
                 AllWemeets.sort((a, b) => b.startDateTime - a.startDateTime);
                 GroupedWeMeet = [];
                 allWeMeetTimes = new Set();
