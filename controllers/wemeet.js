@@ -419,19 +419,54 @@ exports.GetAllSpeakers = async (req, res) => {
     res.json({ message: err });
   }
 };
+var wemeetIdForUpdate;
+var speakerIdForUpdate;
+function toggleRegistrant(val) {
+  try {
+    Wemeet.findByIdAndUpdate(
+      wemeetIdForUpdate,
+      { upDatedAt: Date.now() },
+      function (err, wemeet) {
+        if (err) {
+          console.log(err);
+        } else {
+          wemeet.registrants.forEach((registrant) => {
+            if (registrant.id == speakerIdForUpdate) registrant.isSpeaker = val;
+          });
+          Wemeet.findByIdAndUpdate(
+            wemeetIdForUpdate,
+            wemeet,
+            function (err, updatedwemeet) {
+              if (err) {
+                console.log(err);
+              }
+            }
+          );
+          // res.json(wemeet);
+        }
+      }
+    );
+  } catch (err) {
+    console.log(err);
+  }
+}
 exports.AddSpeakers = async (req, res) => {
+  wemeetIdForUpdate = req.params.wemeetid;
+  speakerIdForUpdate = req.body.id;
   try {
     Wemeet.findByIdAndUpdate(
       req.params.wemeetid,
       {
         $push: {
           speakers: {
+            id: req.body.id,
             name: req.body.name,
             email: req.body.email,
             designation: req.body.designation,
             organization: req.body.organization,
             profilePicUrl: req.body.profilePicUrl,
             sessions: [],
+            isSpeaker: true,
           },
         },
       },
@@ -439,7 +474,8 @@ exports.AddSpeakers = async (req, res) => {
         if (err) {
           console.log(err);
         } else {
-          res.json(wemeet);
+          res.json({ message: "done" });
+          toggleRegistrant(true);
         }
       }
     );
@@ -449,18 +485,15 @@ exports.AddSpeakers = async (req, res) => {
 };
 
 exports.RemoveSpeakers = async (req, res) => {
+  wemeetIdForUpdate = req.params.wemeetid;
+  speakerIdForUpdate = req.body.id;
   try {
     Wemeet.findByIdAndUpdate(
       req.params.wemeetid,
       {
         $pull: {
           speakers: {
-            name: req.body.name,
-            email: req.body.email,
-            designation: req.body.designation,
-            organization: req.body.organization,
-            profilePicUrl: req.body.profilePicUrl,
-            sessions: req.body.sessions,
+            id: req.body.id,
           },
         },
       },
@@ -468,7 +501,8 @@ exports.RemoveSpeakers = async (req, res) => {
         if (err) {
           console.log(err);
         } else {
-          res.json(wemeet);
+          res.json({ message: "done" });
+          toggleRegistrant(false);
         }
       }
     );
@@ -515,6 +549,7 @@ exports.AddRegistrants = async (req, res) => {
       {
         $push: {
           registrants: {
+            id: req.body.id,
             name: req.body.name,
             email: req.body.email,
             designation: req.body.designation,
@@ -522,6 +557,7 @@ exports.AddRegistrants = async (req, res) => {
             city: req.body.city,
             country: req.body.country,
             profilePicUrl: req.body.profilePicUrl,
+            isSpeaker: false,
           },
         },
       },
@@ -546,7 +582,7 @@ exports.CreateSession = async (req, res) => {
     duration: req.body.duration,
     hostId: req.params.id,
     wemeetId: req.params.wemeetid,
-    speakers: req.body.speakers,
+    //speakers: req.body.speakers,
   });
   try {
     const savedSession = await session.save();
@@ -701,7 +737,35 @@ exports.GetAllSession = async (req, res) => {
                 if (err) {
                   console.log(err);
                 } else {
-                  res.json(wemeet.sessions);
+                  // res.json(wemeet.sessions);
+                  var Sessions = wemeet.sessions;
+                  var AllSessions = [];
+                  var count = 0;
+                  Sessions.forEach((sessionId) => {
+                    Session.findOne({ _id: sessionId })
+                      .populate("wemeet")
+                      .exec((err, session) => {
+                        if (session) {
+                          count++;
+                          se = {
+                            _id: session._id,
+                            name: session.name,
+                            description: session.description,
+                            sessionDateTime: session.sessionDateTime,
+                            duration: session.duration,
+                            hostId: session.hostId,
+                            wemeetId: session.wemeetId,
+                            speakers: session.speakers,
+                            createdAt: session.createdAt,
+                            updatedAt: session.updatedAt,
+                          };
+                          AllSessions.push(se);
+                        }
+                        if (count === Sessions.length) {
+                          res.json(AllSessions);
+                        }
+                      });
+                  });
                 }
               }
             );
@@ -723,6 +787,7 @@ exports.AddSessionSpeakers = async (req, res) => {
       {
         $push: {
           speakers: {
+            id: req.body.id,
             name: req.body.name,
             email: req.body.email,
           },
@@ -732,7 +797,32 @@ exports.AddSessionSpeakers = async (req, res) => {
         if (err) {
           console.log(err);
         } else {
-          res.json(session);
+          // res.json(session);
+          tempspeakers = [];
+          Wemeet.findById(req.params.wemeetid, function (err, wemeet) {
+            if (err) {
+              console.log(err);
+            } else {
+              tempspeakers = wemeet.speakers;
+              tempspeakers.forEach((speaker) => {
+                if (speaker.id == req.body.id) {
+                  speaker.sessions.push(session.name);
+                }
+              });
+
+              Wemeet.findByIdAndUpdate(
+                req.params.wemeetid,
+                { speakers: tempspeakers },
+                function (err, wemeet) {
+                  if (err) {
+                    console.log(err);
+                  } else {
+                    res.json({ Message: "Session Speaker Added!" });
+                  }
+                }
+              );
+            }
+          });
         }
       }
     );
@@ -748,8 +838,7 @@ exports.RemoveSessionSpeakers = async (req, res) => {
       {
         $pull: {
           speakers: {
-            name: req.body.name,
-            email: req.body.email,
+            id: req.body.id,
           },
         },
       },
