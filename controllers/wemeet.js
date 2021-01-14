@@ -81,19 +81,38 @@ exports.Upcoming = (req, res, next) => {
         var found = false;
         var upcoming = null;
         var count = 0;
+        var UpcomingWemeets = [];
         Events.forEach((eventId) => {
           Wemeet.findOne({ _id: eventId })
             .populate("user")
             .exec((err, event) => {
               count++;
-              if (event && event.status === 0 && !found) {
-                found = true;
-                upcoming = event;
+              if (event && event.status === 0) {
+                ue = {
+                  speakers: event.speakers,
+                  sessions: event.sessions,
+                  registrants: event.registrants,
+                  _id: event._id,
+                  title: event.title,
+                  description: event.description,
+                  startDateTime: event.startDateTime,
+                  endDateTime: event.endDateTime,
+                  visibility: event.visibility,
+                  loungeTables: event.loungeTables,
+                  status: event.status,
+                  hostId: event.hostId,
+                  imgUrl: event.imgUrl,
+                  createdAt: event.createdAt,
+                  updatedAt: event.updatedAt,
+                };
+                UpcomingWemeets.push(ue);
               }
-              if (!found && count == Events.length) {
-                upcoming = null;
-              }
+
               if (count === Events.length) {
+                if(UpcomingWemeets.length){
+                  UpcomingWemeets.sort((a, b) => b.startDateTime - a.startDateTime);
+                  upcoming=UpcomingWemeets[0];
+                }
                 res.json({
                   UpcomingWemeet: upcoming,
                 });
