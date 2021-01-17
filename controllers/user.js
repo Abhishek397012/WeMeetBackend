@@ -23,6 +23,19 @@ exports.update = (req, res) =>{
     })
 }
 
+exports.getHost=(req, res)=>{
+    console.log(req.params.id);
+    User.find({_id: req.params.id}, (host, err)=>{
+        if(err){
+            console.log(err);
+        }
+        else{
+            console.log("Host found: ", host);
+            res.json({host: host});
+        }
+    })
+}
+
 
 exports.getUser = (req, res)=>{
     res.json(req.profile);
